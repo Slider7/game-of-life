@@ -65,6 +65,16 @@
         }
       }
 
+      class Buttons extends React.Component{
+      	render(){
+      		return(
+      			<div>
+   			      
+      			</div>	
+      		)
+      	}
+      }
+
       class Main extends React.Component {
         constructor(){
           super();
@@ -75,8 +85,7 @@
           this.state = {
             generation: 0,
             //2-мерн.массив значений false-состояние клеток на доске
-            gridFull: Array(this.rows).fill().map(()=>Array(this.cols).fill(false))
-
+            gridFull: Array(this.rows).fill(Array(this.cols).fill(false))
           }
         }
 
@@ -101,21 +110,66 @@
         	this.setState({ gridFull: gridCopy })	
         }
 
+        playBtn = () => {
+        	clearInterval(this.intervalId);
+        	this.intervalId = setInterval(this.play, this.speed);
+        }
+
+				pauseBtn = () => {
+        	clearInterval(this.intervalId);
+        }
+
+        play = () =>{
+        	//Основная функция - алгоритм игры
+        	let grid = this.state.gridFull;
+        	let grid2 = copyArray(this.state.gridFull);
+        	for(let i = 0; i < this.rows; i++){
+        		for(let j = 0; j < this.cols; j++){
+        			let nCount = 0; //считаем число "живых" соседей
+        			  if (i > 0) if (grid[i-1][j]) nCount++;
+								if (i > 0 && j > 0) if (grid[i - 1][j - 1]) nCount++;
+								if (i > 0 && j < this.cols - 1) if (grid[i - 1][j + 1]) nCount++;
+								if (j < this.cols - 1) if (grid[i][j + 1]) nCount++;
+								if (j > 0) if (grid[i][j - 1]) nCount++;
+								if (i < this.rows - 1) if (grid[i + 1][j]) nCount++;
+								if (i < this.rows - 1 && j > 0) if (grid[i + 1][j - 1]) nCount++;
+								if (i < this.rows - 1 && j < this.cols - 1) if (grid[i + 1][j + 1]) nCount++;
+								if (grid[i][j] && (nCount < 2 || nCount > 3)) grid2[i][j] = false;
+								if (!grid[i][j] && (nCount === 3)) grid2[i][j] = true;
+        			}	
+        		}
+        	this.setState({
+        		gridFull: grid2,
+        		generation: this.state.generation + 1
+        	});	
+
+        }
+
         componentDidMount(){
         	this.initBoard();
+        	this.playBtn();
         }
 
         render() {
           return (
             <div>
-              <h2>Игра "Жизнь" / Convay's Game of Life</h2>
+              <h2 className="green-text">Игра "Жизнь" / Convay's Game of Life</h2>
+              <Buttons 
+                playBtn = {this.playBtn}
+                pauseBtn = {this.pauseBtn}
+                slow = {this.slow}
+                fast = {this.fast}
+                clear = {this.clear}
+                init = {this.initBoard}
+                gridSize = {this.greedSize}
+              />
               <Grid
               	gridFull = {this.state.gridFull}
               	cols = {this.cols}
               	rows = {this.rows}
               	selectBox = {this.selectBox}
               />
-              <h3>Поколения: {this.state.generation}</h3>
+              <h3 className="green-text">Поколения: {this.state.generation}</h3>
             </div>
           )
         }
