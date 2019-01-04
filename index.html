@@ -38,7 +38,7 @@
 
       class Grid extends React.Component {
         render(){
-        	const width = (this.props.cols * 16);
+        	const width = this.props.cols * 14;
         	var rowsArr = [];
         	var boxClass = "";
         	for(let i = 0; i < this.props.rows; i++){
@@ -68,20 +68,31 @@
       }
 
       class Buttons extends React.Component{
+      	handleClick = (evt) => {
+      		this.props.gridSize(evt.target.id);
+      	}
       	render(){
       		return(
-						<div className="btn-group btnPanel" role="group" aria-label="Basic example">
-						  <button type="button" className="btn btn-secondary">Left</button>
-						  <button type="button" className="btn btn-secondary">Middle</button>
-						    <div class="btn-group" role="group">
-						    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						      Dropdown
-						    </button>
-						    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-						      <a class="dropdown-item" href="#">Dropdown link</a>
-						      <a class="dropdown-item" href="#">Dropdown link</a>
-						    </div>
-						  </div>  
+      			<div>
+						<div className="btn-group btnPanel" role="group">
+						  <button type="button" className="btn btn-outline-light" onClick={this.props.playBtn}>Старт</button>
+						  <button type="button" className="btn btn-outline-light" onClick={this.props.pauseBtn}>Пауза</button>
+							<button type="button" className="btn btn-outline-light" onClick={this.props.clear}>Очистить</button>
+							<button type="button" className="btn btn-outline-light" onClick={this.props.fast}>Быстро</button>
+						  <button type="button" className="btn btn-outline-light" onClick={this.props.slow}>Медленно</button>
+						  <button type="button" className="btn btn-outline-light" onClick={this.props.init}>Сброс</button>
+
+						  <div class="dropdown">
+						    <button class="btn btn-outline-light dropdown-toggle" type="button" id="ddBtn">
+								  Размер поля
+							  </button>
+									<div class="dmenu btn-group-vertical">
+									  <button type="button" id="1" className="btn btn-outline-light" onClick={this.handleClick}>20 x 10</button>
+									  <button type="button" id="2" className="btn btn-outline-light" onClick={this.handleClick}>50 x 30</button>
+									  <button type="button" id="3" className="btn btn-outline-light" onClick={this.handleClick}>70 x 50</button>
+									</div>
+							</div>
+							</div>
 						</div>
       		)
       	}
@@ -90,7 +101,7 @@
       class Main extends React.Component {
         constructor(){
           super();
-          this.speed = 100;
+          this.speed = 200;
           this.rows = 40;
           this.cols = 50;
 
@@ -131,6 +142,42 @@
         	clearInterval(this.intervalId);
         }
 
+        slowBtn = () =>{
+        	this.speed = 1000;
+        	this.playBtn();
+        }
+
+        fastBtn = () =>{
+        	this.speed = 100;
+        	this.playBtn();
+        }
+
+        clearBtn = () =>{
+        	var grid = Array(this.rows).fill(Array(this.cols).fill(false));
+        	this.setState({
+        		gridFull: grid,
+        		generation: 0
+        	});
+				}
+
+				gridSize = (idSize) =>{
+					alert(idSize);
+					switch (idSize){
+						case "1":
+							this.cols = 20;
+							this.rows = 10;
+							break;
+						case "2":
+							this.cols = 50;
+							this.rows = 30;
+							break;
+						default:
+							this.cols = 70;
+							this.rows = 50;
+					}
+					this.clearBtn();	
+				}
+
         play = () =>{
         	//Основная функция - алгоритм игры
         	let grid = this.state.gridFull;
@@ -169,9 +216,9 @@
               <Buttons 
                 playBtn = {this.playBtn}
                 pauseBtn = {this.pauseBtn}
-                slow = {this.slow}
-                fast = {this.fast}
-                clear = {this.clear}
+                slow = {this.slowBtn}
+                fast = {this.fastBtn}
+                clear = {this.clearBtn}
                 init = {this.initBoard}
                 gridSize = {this.greedSize}
               />

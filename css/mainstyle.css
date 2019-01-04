@@ -50,6 +50,29 @@ h1, h2, h3, h4 {
 }
 
 .btnPanel{
+	display: flex;
+	width: 50%;
 	align-items: center;
-	text-align: center;
+	margin: auto;
 }
+
+.dmenu{
+	display: none;
+	position: absolute;
+	background-color: #777777;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.7);
+	min-width: 120px;
+  z-index: 1;
+  text-align: center;
+}
+
+.dropdown-item{
+	color: #fff;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown:hover .dmenu {display: block;}
