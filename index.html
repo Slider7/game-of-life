@@ -38,12 +38,13 @@
 
       class Grid extends React.Component {
         render(){
-        	const width = this.props.cols * 14;
+        	const colWidtn = this.props.cols * 14;
         	var rowsArr = [];
         	var boxClass = "";
-        	for(let i = 0; i < this.props.rows; i++){
-        		for(let j = 0; j < this.props.cols; j++){
-        			let boxId = 1 + "_" + j;
+        	
+					for (var i = 0; i < this.props.rows; i++) {
+						for (var j = 0; j < this.props.cols; j++) {
+							let boxId = i + "_" + j;
 
         			boxClass = this.props.gridFull[i][j] ? "box on" : "box off";
         			rowsArr.push(
@@ -60,7 +61,7 @@
         	}
 
           return(
-            <div className="grid" style={{width: width}}>
+            <div className="grid" style={{width: colWidtn}}>
               {rowsArr}
             </div>
           )
@@ -68,8 +69,8 @@
       }
 
       class Buttons extends React.Component{
-      	handleClick = (evt) => {
-      		this.props.gridSize(evt.target.id);
+      	handleClick = (event) => {
+      		this.props.gridSize(event);
       	}
       	render(){
       		return(
@@ -80,7 +81,7 @@
 							<button type="button" className="btn btn-outline-light" onClick={this.props.clear}>Очистить</button>
 							<button type="button" className="btn btn-outline-light" onClick={this.props.fast}>Быстро</button>
 						  <button type="button" className="btn btn-outline-light" onClick={this.props.slow}>Медленно</button>
-						  <button type="button" className="btn btn-outline-light" onClick={this.props.init}>Сброс</button>
+						  <button type="button" className="btn btn-outline-light" onClick={this.props.init}>Новый посев</button>
 
 						  <div class="dropdown">
 						    <button class="btn btn-outline-light dropdown-toggle" type="button" id="ddBtn">
@@ -102,14 +103,14 @@
         constructor(){
           super();
           this.speed = 200;
-          this.rows = 40;
+          this.rows = 30;
           this.cols = 50;
 
           this.state = {
-            generation: 0,
             //2-мерн.массив значений false-состояние клеток на доске
-            gridFull: Array(this.rows).fill(Array(this.cols).fill(false))
-          }
+						generation: 0,
+						gridFull: Array(this.rows).fill().map(() => Array(this.cols).fill(false))
+					}
         }
 
         selectBox = (row, col) =>{
@@ -153,16 +154,16 @@
         }
 
         clearBtn = () =>{
-        	var grid = Array(this.rows).fill(Array(this.cols).fill(false));
+        	var grid = Array(this.rows).fill().map(() => Array(this.cols).fill(false));
         	this.setState({
         		gridFull: grid,
         		generation: 0
         	});
+        	this.pauseBtn();
 				}
 
-				gridSize = (idSize) =>{
-					alert(idSize);
-					switch (idSize){
+				gridSize = (event) =>{
+					switch (event.target.id){
 						case "1":
 							this.cols = 20;
 							this.rows = 10;
@@ -175,7 +176,8 @@
 							this.cols = 70;
 							this.rows = 50;
 					}
-					this.clearBtn();	
+					//console.log("MAIN rows/cols: " + this.rows + " / " + this.cols );
+					this.clearBtn();
 				}
 
         play = () =>{
@@ -220,7 +222,7 @@
                 fast = {this.fastBtn}
                 clear = {this.clearBtn}
                 init = {this.initBoard}
-                gridSize = {this.greedSize}
+                gridSize = {this.gridSize}
               />
               <Grid
               	gridFull = {this.state.gridFull}
